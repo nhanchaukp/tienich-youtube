@@ -16,7 +16,7 @@ def make_savepath(title):
     return os.path.join("%s.mp3" % (title.replace("mp3","")))
 
 @app.route('/', methods=['GET'])
-url = request.form["song"]
+url = 'https://www.youtube.com/watch?v=HXkh7EOqcQ4'
 options = {
     'format': 'bestaudio/best',
 	'outtmpl': '%(id)s'
