@@ -32,9 +32,9 @@ with ydl:
 	os.rename(result['id'], savepath)
 	print("Downloaded and converted %s successfully!" % savepath)
 	try:
-		return send_file(savepath,savepath, as_attachment=True)
+		send_file(savepath,savepath, as_attachment=True)
 	except Exception as e:
-		return str(e)
+		print(str(e))
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 8000))
