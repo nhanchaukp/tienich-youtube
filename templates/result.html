@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="icon" href="/static/images/hoangicon.png"/>
+<title>Coffee Youtube</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/result2.css') }}">
+  </head>
+<body bgcolor="#6f4e37" class="centered-wrapper" width = "device-width">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script>
+	$(document).ready(function(){
+            $("#youtube").autocomplete({
+    source: function(request, response){
+        /* Google Developer ID (optional) */
+        var apiKey = 'AI39si7ZLU83bKtKd4MrdzqcjTVI3DK9FvwJR6a4kB_SW_Dbuskit-mEYqskkSsFLxN5DiG1OBzdHzYfW0zXWjxirQKyxJfdkg';
+        /* Search keyword */
+        var query = request.term;
+        /* youtube sorgusu */
+        $.ajax({
+            url: "http://suggestqueries.google.com/complete/search?hl=en&ds=yt&client=youtube&hjson=t&cp=1&q="+query+"&key="+apiKey+"&format=5&alt=json&callback=?",  
+            dataType: 'jsonp',
+            success: function(data, textStatus, request) { 
+               response( $.map( data[1], function(item) {
+                    return {
+                        label: item[0],
+                        value: item[0]
+                    }
+                }));
+            }
+        });
+    },
+    /* You can use transaction is selected here to */
+    select: function( event, ui ) {
+        $.youtubeAPI(ui.item.label);
+    }
+    });
+
+            $('button#submit').click(function(){
+    var value = $('input#youtube').val();
+        $.youtubeAPI(value);
+    });
+
+
+            $.youtubeAPI = function(kelime){
+    var sonuc = $('#sonuc');
+    sonuc.html('Arama gerçeklestiriliyor...');
+    $.ajax({
+        type: 'GET',
+        url: 'http://gdata.youtube.com/feeds/api/videos?q=' + kelime + '&max-results=15&v=2&alt=jsonc',
+        dataType: 'jsonp',
+        success: function( veri ){
+            if( veri.data.items ){
+                sonuc.empty();
+                $.each( veri.data.items, function(i, data) {
+                    sonuc.append('<div class="youtube">\
+                        <img src="' + data.thumbnail.sqDefault + '" alt="" />\
+                        <h3><a href="javascript:void(0)" onclick="$.youtubePlay(\'' + data.id + '\', \'' + data.content[5] + '\')">' + data.title + '</a></h3>\
+                        <p>' + data.description + '</p>\
+                    </div>\
+                    <div class="youtubeOynat" id="' + data.id + '"></div>');
+                });
+            }
+            else {
+                sonuc.html('<div class="hata"><strong>' + kelime + '</strong> ile ilgili hiç video bulunamadi!</div>');
+            }
+        }
+    });
+    }
+            $.youtubePlay = function(yid, frame){
+    $('.youtubeOynat').slideUp().empty();
+    $('#'+yid).slideDown().html('<iframe src="'+ frame +'&autoplay=1" style="width: 100%; box-sizing: border-box; height: 300px" />');
+    }
+        });
+	</script>
+<div class="arama">
+<form class = "searchbar" action="/result" method="post" style="max-width:500px">
+ <div class="ui-widget">
+ <input type="text" name="youtube" id="youtube" placeholder = "Put some words or youtube url..">
+  <button id="submit" type="submit"><i class="fa fa-search"></i></button>
+</div>
+ </form>
+ </div>
+		</tr>
+		</tr>
+		</p>
+		<p>Press the link, relax, drink a cup of coffee and your MP3 file will be ready! ~ <button  id = "fun" class = "button buttondl" onclick = "change()"><img src="/static/images/hoangbutton.png" alt="Record button" width="20" height="20"></button></p>
+<script src="/static/js/fun.js"></script>
+		
+		<form class = "getdownload" action="/download" method="post">
+<table>
+
+{% for key,value in display.items() %}
+	<td>
+	<div>
+	<button name = "song" value={{value[2]}} type = "submit"
+><img src={{value[0]}} alt={{key}} width="200" height="100" class ="img"></div> 
+</button>
+	</td>
+<td>
+<h2>
+<button name = "song" value={{value[2]}} type = "submit"
+>{{ key }}</button>
+</h2>
+<div class = "description">{{value[1]}}</p>
+<!--<td><button name = "song" value={{value[2]}} type = "submit"><img src="/static/images/hoangbutton.png" alt="Record button" width="50" height="50"></button>
+</td>-->
+</td>
+</tr>
+	{% endfor %}
+</table>
+</form>
+<footer>
+<p class="copyright" align = "center"><font color="white">Copyright © {{year}} with <i class="fa fa-heart"></i> by Bohemian Guy! Follow him on <a href="https://chomottachcoffee.wordpress.com" target="_blank" style = "color:white">Bohemian Guy</a></p>
+</footer>
+</html>
